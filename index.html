@@ -1069,6 +1069,63 @@
             font-size: 11px;
         }
 
+        /* Final Goal/Prize */
+        .path-goal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--spacing-xl);
+            margin-top: var(--spacing-xl);
+            text-align: center;
+        }
+
+        .path-goal-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.4);
+            margin-bottom: var(--spacing-lg);
+            animation: bounce 2s ease-in-out infinite;
+            border: 5px solid white;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .path-goal.locked .path-goal-icon {
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            filter: grayscale(1);
+        }
+
+        .path-goal.unlocked .path-goal-icon {
+            animation: bounce 2s ease-in-out infinite, glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 8px 32px rgba(255, 215, 0, 0.4); }
+            50% { box-shadow: 0 8px 48px rgba(255, 215, 0, 0.8); }
+        }
+
+        .path-goal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .path-goal-text {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
         /* ==================== POKUS 3: BALÓNKOVÁ HRA ==================== */
 
         .balloon-game-container {
@@ -2049,6 +2106,21 @@
                         </div>
                     </div>
                 `).join('')}
+
+                <!-- Final Goal -->
+                <div class="path-goal ${gameState.totalCompleted >= gameState.quests.length ? 'unlocked' : 'locked'}">
+                    <div class="path-goal-icon">
+                        ${gameState.totalCompleted >= gameState.quests.length ? '🎁' : '🔒'}
+                    </div>
+                    <div class="path-goal-title">
+                        ${gameState.totalCompleted >= gameState.quests.length ? 'Gratuluji! 🎉' : 'Cíl'}
+                    </div>
+                    <div class="path-goal-text">
+                        ${gameState.totalCompleted >= gameState.quests.length
+                            ? 'Splnil jsi všechny zážitky! Jsi mistr!'
+                            : `Splň všech ${gameState.quests.length} zážitků a odemkni odměnu!`}
+                    </div>
+                </div>
             `;
 
             lucide.createIcons();
