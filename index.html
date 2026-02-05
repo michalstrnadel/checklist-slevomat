@@ -592,34 +592,6 @@
             z-index: 9999;
         }
 
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, var(--color-primary), var(--color-info));
-            border-radius: var(--radius-full);
-            border: none;
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            box-shadow: 0 6px 24px rgba(0, 110, 185, 0.4);
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-        }
-
-        .fab:hover {
-            transform: scale(1.1) rotate(90deg);
-        }
-
-        .fab:active {
-            transform: scale(0.95);
-        }
 
         /* Level Up Modal */
         .modal {
@@ -880,9 +852,6 @@
                 <div id="statsContent"></div>
             </div>
         </div>
-
-        <!-- Floating Action Button -->
-        <button class="fab" onclick="showAddQuest()">+</button>
 
         <!-- Confetti Canvas -->
         <canvas id="confetti"></canvas>
