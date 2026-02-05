@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slevomat - Quest & Achievements</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --color-primary: #006eb9;
+            --color-primary-hover: #005685;
+            --color-success: #088107;
+            --color-info: #00b2e5;
+            --color-warning: #ffa400;
+            --color-danger: #d2381d;
+            --color-text-primary: #000000;
+            --color-text-secondary: #6b6b70;
+            --color-border: #cbccce;
+            --color-surface-primary: #ffffff;
+            --color-surface-faded: #f1f3f5;
+
+            /* Rarity colors */
+            --rarity-common: #6b6b70;
+            --rarity-rare: #00b2e5;
+            --rarity-epic: #8b5cf6;
+            --rarity-legendary: #ffa400;
+
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+
+            /* Border radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-full: 9999px;
+
+            /* Typography */
+            --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        .mobile-container {
+            max-width: 414px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--color-surface-primary);
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-info) 100%);
+            color: white;
+            padding: var(--spacing-md);
+            padding-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-section {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, #ffa400, #ff6b6b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 3px solid white;
+        }
+
+        .user-info h2 {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .user-stats {
+            display: flex;
+            gap: var(--spacing-md);
+            font-size: 13px;
+            opacity: 0.95;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .streak-badge {
+            background: rgba(255, 164, 0, 0.2);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+        }
+
+        /* Level Progress */
+        .level-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            margin-top: var(--spacing-md);
+            position: relative;
+            z-index: 1;
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .level-badge {
+            background: white;
+            color: var(--color-primary);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .xp-text {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffa400, #ffdd00);
+            border-radius: var(--radius-full);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(255, 164, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Quick Stats Cards */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: var(--color-surface-faded);
+        }
+
+        .stat-card {
+            background: white;
+            padding: var(--spacing-md) var(--spacing-sm);
+            border-radius: var(--radius-md);
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 2px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 100px;
+            padding: var(--spacing-md);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--color-danger);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+        }
+
+        /* Content */
+        .content {
+            padding: var(--spacing-md);
+            padding-bottom: 80px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Daily Challenge */
+        .daily-challenge {
+            background: linear-gradient(135deg, #ffa400 0%, #ff6b6b 100%);
+            color: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(255, 164, 0, 0.3);
+        }
+
+        .daily-challenge::before {
+            content: '⚡';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 120px;
+            opacity: 0.1;
+        }
+
+        .challenge-header {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--spacing-sm);
+            opacity: 0.9;
+        }
+
+        .challenge-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .challenge-progress {
+            background: rgba(255, 255, 255, 0.2);
+            height: 8px;
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .challenge-progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: var(--radius-full);
+            transition: width 0.4s ease;
+        }
+
+        .challenge-reward {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        /* Quest Item */
+        .quest-item {
+            background: white;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quest-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--rarity-common);
+            transition: all 0.3s;
+        }
+
+        .quest-item.rare::before { background: var(--rarity-rare); }
+        .quest-item.epic::before { background: var(--rarity-epic); }
+        .quest-item.legendary::before { background: var(--rarity-legendary); }
+
+        .quest-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .quest-item.completed {
+            border-color: var(--color-success);
+            background: linear-gradient(135deg, rgba(8, 129, 7, 0.05) 0%, rgba(8, 129, 7, 0.02) 100%);
+        }
+
+        .quest-item.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            right: -30px;
+            transform: translateY(-50%);
+            font-size: 100px;
+            color: var(--color-success);
+            opacity: 0.05;
+            font-weight: 700;
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .quest-title-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .checkbox {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+
+        .checkbox.unchecked {
+            border: 3px solid var(--color-primary);
+            background: white;
+        }
+
+        .checkbox.checked {
+            background: var(--color-success);
+            border: 3px solid var(--color-success);
+            animation: checkPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-weight: 700;
+        }
+
+        @keyframes checkPop {
+            0% { transform: scale(0.8) rotate(-45deg); }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .quest-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .rarity-badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .rarity-common { background: #e5e7eb; color: var(--rarity-common); }
+        .rarity-rare { background: #dbeafe; color: var(--rarity-rare); }
+        .rarity-epic { background: #ede9fe; color: var(--rarity-epic); }
+        .rarity-legendary { background: #fef3c7; color: var(--rarity-legendary); }
+
+        .quest-meta {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            margin-top: var(--spacing-sm);
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .quest-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .xp-reward {
+            background: linear-gradient(135deg, #ffa400, #ffdd00);
+            color: white;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Achievement Card */
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .achievement-card {
+            background: white;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .achievement-card.unlocked {
+            border-color: var(--color-warning);
+            background: linear-gradient(135deg, rgba(255, 164, 0, 0.1) 0%, rgba(255, 221, 0, 0.05) 100%);
+        }
+
+        .achievement-card.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        .achievement-icon {
+            font-size: 36px;
+            margin-bottom: var(--spacing-sm);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .achievement-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .achievement-progress {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Category Filters */
+        .category-filters {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 2px;
+        }
+
+        .category-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: white;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        /* Confetti Canvas */
+        #confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+            border-radius: var(--radius-full);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(0, 110, 185, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Level Up Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            max-width: 350px;
+            text-align: center;
+            animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px) scale(0.8); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 64px;
+            margin-bottom: var(--spacing-md);
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-text {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 110, 185, 0.4);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2.5;
+        }
+
+        .tab-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 6px;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .stat-icon {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-top">
+                <div class="user-section">
+                    <div class="avatar">L</div>
+                    <div class="user-info">
+                        <h2>Lucie</h2>
+                        <div class="user-stats">
+                            <div class="stat-item">
+                                <i data-lucide="flame" class="stat-icon" style="color: #ffa400;"></i>
+                                <span class="streak-badge"><span id="streak">0</span> dní</span>
+                            </div>
+                            <div class="stat-item">
+                                <i data-lucide="coins" class="stat-icon" style="color: #ffa400;"></i>
+                                <span id="credits">0</span> kreditů
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-section">
+                <div class="level-header">
+                    <div class="level-badge">Level <span id="level">1</span></div>
+                    <div class="xp-text"><span id="currentXP">0</span> / <span id="maxXP">100</span> XP</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="xpProgress" style="width: 0%"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalCompleted">0</div>
+                <div class="stat-label">Splněno</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalQuests">15</div>
+                <div class="stat-label">Celkem</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="achievementCount">0/12</div>
+                <div class="stat-label">Achievementy</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="quests">
+                <i data-lucide="target" class="tab-icon"></i>
+                Questy
+                <span class="tab-badge" id="dailyBadge">1</span>
+            </button>
+            <button class="tab" data-tab="achievements">
+                <i data-lucide="award" class="tab-icon"></i>
+                Achievementy
+            </button>
+            <button class="tab" data-tab="stats">
+                <i data-lucide="bar-chart-3" class="tab-icon"></i>
+                Stats
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Quests Tab -->
+            <div class="tab-content active" id="quests">
+                <!-- Daily Challenge -->
+                <div class="daily-challenge">
+                    <div class="challenge-header" style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="zap" style="width: 16px; height: 16px;"></i>
+                        Denní výzva
+                    </div>
+                    <div class="challenge-title">Splň 3 zážitky dnes!</div>
+                    <div class="challenge-progress">
+                        <div class="challenge-progress-fill" id="dailyProgress" style="width: 0%"></div>
+                    </div>
+                    <div class="challenge-reward">
+                        <span>Progress: <span id="dailyCount">0</span>/3</span>
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="gift" style="width: 16px; height: 16px;"></i>
+                            +200 XP
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="category-filters">
+                    <button class="filter-btn active" data-category="all" style="display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
+                        Vše
+                    </button>
+                    <button class="filter-btn" data-category="adrenalin" style="display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="zap" style="width: 16px; height: 16px;"></i>
+                        Adrenalin
+                    </button>
+                    <button class="filter-btn" data-category="relax" style="display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="flower-2" style="width: 16px; height: 16px;"></i>
+                        Relax
+                    </button>
+                    <button class="filter-btn" data-category="food" style="display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="utensils" style="width: 16px; height: 16px;"></i>
+                        Food
+                    </button>
+                    <button class="filter-btn" data-category="travel" style="display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="plane" style="width: 16px; height: 16px;"></i>
+                        Travel
+                    </button>
+                </div>
+
+                <div class="section-title">
+                    <i data-lucide="clipboard-list" class="section-icon"></i>
+                    <span>Tvoje Questy</span>
+                </div>
+
+                <!-- Quest List -->
+                <div id="questList"></div>
+            </div>
+
+            <!-- Achievements Tab -->
+            <div class="tab-content" id="achievements">
+                <div class="section-title">
+                    <i data-lucide="award" class="section-icon"></i>
+                    <span>Tvoje Achievementy</span>
+                </div>
+                <div class="achievement-grid" id="achievementGrid"></div>
+            </div>
+
+            <!-- Stats Tab -->
+            <div class="tab-content" id="stats">
+                <div class="section-title">
+                    <i data-lucide="trending-up" class="section-icon"></i>
+                    <span>Tvoje Statistiky</span>
+                </div>
+                <div id="statsContent"></div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab" onclick="showAddQuest()">+</button>
+
+        <!-- Confetti Canvas -->
+        <canvas id="confetti"></canvas>
+
+        <!-- Level Up Modal -->
+        <div class="modal" id="levelUpModal">
+            <div class="modal-content">
+                <div class="modal-icon">
+                    <i data-lucide="party-popper" style="width: 64px; height: 64px; stroke-width: 2; color: var(--color-warning);"></i>
+                </div>
+                <div class="modal-title">Level Up!</div>
+                <div class="modal-text">Gratuluji! Dosáhl jsi <strong>Level <span id="modalLevel">2</span></strong>!</div>
+                <button class="modal-btn" onclick="closeLevelUpModal()">Pokračovat</button>
+            </div>
+        </div>
+
+        <!-- Achievement Unlocked Modal -->
+        <div class="modal" id="achievementModal">
+            <div class="modal-content">
+                <div class="modal-icon" id="achievementModalIcon">
+                    <i data-lucide="award" style="width: 64px; height: 64px; stroke-width: 2; color: var(--color-warning);"></i>
+                </div>
+                <div class="modal-title">Achievement Unlocked!</div>
+                <div class="modal-text" id="achievementModalText"></div>
+                <button class="modal-btn" onclick="closeAchievementModal()">Awesome!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        const gameState = {
+            level: 1,
+            xp: 0,
+            streak: 0,
+            credits: 0,
+            totalCompleted: 0,
+            lastCompletedDate: null,
+            quests: [
+                // Adrenalin
+                { id: 1, title: 'Proletět se helikoptérou', category: 'adrenalin', rarity: 'epic', xp: 100, people: 2347, completed: false },
+                { id: 2, title: 'Skok padákem', category: 'adrenalin', rarity: 'legendary', xp: 150, people: 892, completed: false },
+                { id: 3, title: 'Bungee jumping', category: 'adrenalin', rarity: 'epic', xp: 120, people: 1523, completed: false },
+                { id: 4, title: 'Jízda Ferrari', category: 'adrenalin', rarity: 'rare', xp: 80, people: 3421, completed: false },
+
+                // Relax
+                { id: 5, title: 'Zkusit head-spa', category: 'relax', rarity: 'common', xp: 30, people: 5632, completed: false },
+                { id: 6, title: 'Thajská masáž', category: 'relax', rarity: 'common', xp: 25, people: 8934, completed: false },
+                { id: 7, title: 'Den ve wellness', category: 'relax', rarity: 'rare', xp: 50, people: 4521, completed: false },
+
+                // Food
+                { id: 8, title: 'Snídat v hotelu Kempinski', category: 'food', rarity: 'rare', xp: 60, people: 1234, completed: false },
+                { id: 9, title: 'Ochutnávka sushi', category: 'food', rarity: 'common', xp: 35, people: 6789, completed: false },
+                { id: 10, title: 'Michelin restaurant', category: 'food', rarity: 'legendary', xp: 200, people: 432, completed: false },
+                { id: 11, title: 'Degustační menu', category: 'food', rarity: 'epic', xp: 90, people: 2156, completed: false },
+
+                // Travel
+                { id: 12, title: 'Navštívit pyramidy', category: 'travel', rarity: 'epic', xp: 150, people: 3245, completed: false },
+                { id: 13, title: 'Spatřit polární záři', category: 'travel', rarity: 'legendary', xp: 180, people: 678, completed: false },
+                { id: 14, title: 'Safari v Africe', category: 'travel', rarity: 'legendary', xp: 200, people: 543, completed: false },
+                { id: 15, title: 'Road trip po USA', category: 'travel', rarity: 'epic', xp: 120, people: 2891, completed: false },
+            ],
+            achievements: [
+                { id: 'first', title: 'První krok', icon: 'target', description: 'Splň první quest', unlocked: false, progress: 0, target: 1 },
+                { id: 'beginner', title: 'Začátečník', icon: 'sprout', description: 'Splň 5 questů', unlocked: false, progress: 0, target: 5 },
+                { id: 'adventurer', title: 'Dobrodruh', icon: 'swords', description: 'Splň 10 questů', unlocked: false, progress: 0, target: 10 },
+                { id: 'master', title: 'Mistr', icon: 'crown', description: 'Splň všechny questy', unlocked: false, progress: 0, target: 15 },
+                { id: 'adrenalin', title: 'Adrenalinový junkie', icon: 'zap', description: 'Splň všechny adrenalin questy', unlocked: false, progress: 0, target: 4 },
+                { id: 'foodie', title: 'Foodie', icon: 'utensils', description: 'Splň všechny food questy', unlocked: false, progress: 0, target: 4 },
+                { id: 'traveler', title: 'Cestovatel', icon: 'plane', description: 'Splň všechny travel questy', unlocked: false, progress: 0, target: 4 },
+                { id: 'zen', title: 'Zen Master', icon: 'flower-2', description: 'Splň všechny relax questy', unlocked: false, progress: 0, target: 3 },
+                { id: 'streak3', title: 'Na vlně', icon: 'flame', description: '3 dny po sobě', unlocked: false, progress: 0, target: 3 },
+                { id: 'streak7', title: 'Týdenní série', icon: 'flame', description: '7 dní po sobě', unlocked: false, progress: 0, target: 7 },
+                { id: 'level5', title: 'Level 5', icon: 'star', description: 'Dosáhni Level 5', unlocked: false, progress: 1, target: 5 },
+                { id: 'legendary', title: 'Legendární', icon: 'diamond', description: 'Splň legendary quest', unlocked: false, progress: 0, target: 1 },
+            ]
+        };
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('slevomat-game-state');
+            if (saved) {
+                const savedState = JSON.parse(saved);
+                Object.assign(gameState, savedState);
+            }
+            updateUI();
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('slevomat-game-state', JSON.stringify(gameState));
+        }
+
+        // Calculate level from XP
+        function calculateLevel() {
+            return Math.floor(gameState.xp / 100) + 1;
+        }
+
+        // Calculate max XP for current level
+        function calculateMaxXP() {
+            return gameState.level * 100;
+        }
+
+        // Add XP
+        function addXP(amount) {
+            const oldLevel = gameState.level;
+            gameState.xp += amount;
+            const newLevel = calculateLevel();
+
+            if (newLevel > oldLevel) {
+                gameState.level = newLevel;
+                showLevelUpModal();
+                launchConfetti();
+                checkAchievement('level5');
+            }
+
+            updateUI();
+            saveState();
+        }
+
+        // Toggle quest
+        function toggleQuest(questId) {
+            const quest = gameState.quests.find(q => q.id === questId);
+            if (!quest) return;
+
+            quest.completed = !quest.completed;
+
+            if (quest.completed) {
+                gameState.totalCompleted++;
+                addXP(quest.xp);
+                gameState.credits += Math.floor(quest.xp / 10);
+                updateStreak();
+                launchConfetti();
+
+                // Check achievements
+                checkAchievement('first');
+                checkAchievement('beginner');
+                checkAchievement('adventurer');
+                checkAchievement('master');
+                checkAchievement(quest.category);
+                if (quest.rarity === 'legendary') {
+                    checkAchievement('legendary');
+                }
+            } else {
+                gameState.totalCompleted--;
+                gameState.xp -= quest.xp;
+                gameState.credits -= Math.floor(quest.xp / 10);
+                if (gameState.xp < 0) gameState.xp = 0;
+                if (gameState.credits < 0) gameState.credits = 0;
+            }
+
+            updateUI();
+            saveState();
+        }
+
+        // Update streak
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const lastDate = gameState.lastCompletedDate;
+
+            if (lastDate !== today) {
+                if (lastDate === new Date(Date.now() - 86400000).toDateString()) {
+                    gameState.streak++;
+                } else {
+                    gameState.streak = 1;
+                }
+                gameState.lastCompletedDate = today;
+
+                checkAchievement('streak3');
+                checkAchievement('streak7');
+            }
+        }
+
+        // Check achievement
+        function checkAchievement(achievementId) {
+            const achievement = gameState.achievements.find(a => a.id === achievementId);
+            if (!achievement || achievement.unlocked) return;
+
+            let progress = 0;
+
+            switch (achievementId) {
+                case 'first':
+                case 'beginner':
+                case 'adventurer':
+                case 'master':
+                    progress = gameState.totalCompleted;
+                    break;
+                case 'adrenalin':
+                case 'food':
+                case 'travel':
+                case 'relax':
+                    progress = gameState.quests.filter(q => q.category === achievementId && q.completed).length;
+                    break;
+                case 'streak3':
+                case 'streak7':
+                    progress = gameState.streak;
+                    break;
+                case 'level5':
+                    progress = gameState.level;
+                    break;
+                case 'legendary':
+                    progress = gameState.quests.filter(q => q.rarity === 'legendary' && q.completed).length;
+                    break;
+            }
+
+            achievement.progress = progress;
+
+            if (progress >= achievement.target && !achievement.unlocked) {
+                achievement.unlocked = true;
+                showAchievementModal(achievement);
+                addXP(50); // Bonus XP for achievement
+            }
+        }
+
+        // Update UI
+        function updateUI() {
+            // Level and XP
+            document.getElementById('level').textContent = gameState.level;
+            document.getElementById('currentXP').textContent = gameState.xp;
+            const maxXP = calculateMaxXP();
+            document.getElementById('maxXP').textContent = maxXP;
+            const xpPercent = ((gameState.xp % 100) / 100) * 100;
+            document.getElementById('xpProgress').style.width = xpPercent + '%';
+
+            // Stats
+            document.getElementById('streak').textContent = gameState.streak;
+            document.getElementById('credits').textContent = gameState.credits;
+            document.getElementById('totalCompleted').textContent = gameState.totalCompleted;
+            document.getElementById('totalQuests').textContent = gameState.quests.length;
+
+            const unlockedCount = gameState.achievements.filter(a => a.unlocked).length;
+            document.getElementById('achievementCount').textContent = `${unlockedCount}/${gameState.achievements.length}`;
+
+            // Daily challenge
+            const dailyCompleted = gameState.quests.filter(q => q.completed).slice(0, 3).length;
+            document.getElementById('dailyCount').textContent = dailyCompleted;
+            document.getElementById('dailyProgress').style.width = (dailyCompleted / 3 * 100) + '%';
+
+            if (dailyCompleted >= 3) {
+                document.getElementById('dailyBadge').style.display = 'none';
+            } else {
+                document.getElementById('dailyBadge').style.display = 'block';
+            }
+
+            renderQuests();
+            renderAchievements();
+            renderStats();
+            lucide.createIcons();
+        }
+
+        // Render quests
+        function renderQuests(category = 'all') {
+            const questList = document.getElementById('questList');
+            const filtered = category === 'all'
+                ? gameState.quests
+                : gameState.quests.filter(q => q.category === category);
+
+            questList.innerHTML = filtered.map(quest => `
+                <div class="quest-item ${quest.rarity} ${quest.completed ? 'completed' : ''}" onclick="toggleQuest(${quest.id})">
+                    <div class="quest-header">
+                        <div class="quest-title-section">
+                            <div class="checkbox ${quest.completed ? 'checked' : 'unchecked'}"></div>
+                            <div>
+                                <div class="quest-title">${quest.title}</div>
+                                <div class="quest-meta">
+                                    <span class="rarity-badge rarity-${quest.rarity}">${quest.rarity}</span>
+                                    <span class="quest-meta-item" style="display: flex; align-items: center; gap: 4px;">
+                                        <i data-lucide="users" style="width: 14px; height: 14px;"></i>
+                                        ${quest.people.toLocaleString()}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="xp-reward" style="display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="star" style="width: 14px; height: 14px;"></i>
+                            +${quest.xp}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Render achievements
+        function renderAchievements() {
+            const grid = document.getElementById('achievementGrid');
+            grid.innerHTML = gameState.achievements.map(ach => `
+                <div class="achievement-card ${ach.unlocked ? 'unlocked' : 'locked'}"
+                     onclick="showAchievementInfo('${ach.id}')">
+                    <div class="achievement-icon">
+                        <i data-lucide="${ach.icon}" style="width: 36px; height: 36px; stroke-width: 2;"></i>
+                    </div>
+                    <div class="achievement-title">${ach.title}</div>
+                    <div class="achievement-progress">${ach.progress}/${ach.target}</div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Render stats
+        function renderStats() {
+            const statsContent = document.getElementById('statsContent');
+            const categories = ['adrenalin', 'relax', 'food', 'travel'];
+            const rarities = ['common', 'rare', 'epic', 'legendary'];
+
+            const categoryStats = categories.map(cat => {
+                const total = gameState.quests.filter(q => q.category === cat).length;
+                const completed = gameState.quests.filter(q => q.category === cat && q.completed).length;
+                return { cat, total, completed, percent: Math.round(completed / total * 100) };
+            });
+
+            const rarityStats = rarities.map(rar => {
+                const total = gameState.quests.filter(q => q.rarity === rar).length;
+                const completed = gameState.quests.filter(q => q.rarity === rar && q.completed).length;
+                return { rar, total, completed };
+            });
+
+            statsContent.innerHTML = `
+                <div style="background: white; padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-bottom: var(--spacing-lg);">
+                    <h3 style="margin-bottom: var(--spacing-md); font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="folder" style="width: 20px; height: 20px;"></i>
+                        Kategorie
+                    </h3>
+                    ${categoryStats.map(s => `
+                        <div style="margin-bottom: var(--spacing-md);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm); font-size: 14px; align-items: center;">
+                                <span style="text-transform: capitalize; display: flex; align-items: center;">${getCategoryIcon(s.cat)} ${s.cat}</span>
+                                <span>${s.completed}/${s.total}</span>
+                            </div>
+                            <div class="progress-bar" style="height: 8px;">
+                                <div class="progress-fill" style="width: ${s.percent}%; background: var(--color-primary);"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div style="background: white; padding: var(--spacing-lg); border-radius: var(--radius-lg);">
+                    <h3 style="margin-bottom: var(--spacing-md); font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="diamond" style="width: 20px; height: 20px;"></i>
+                        Rarity
+                    </h3>
+                    ${rarityStats.map(s => `
+                        <div style="display: flex; justify-content: space-between; padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--color-border);">
+                            <span style="text-transform: capitalize;">${s.rar}</span>
+                            <span style="font-weight: 600;">${s.completed}/${s.total}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // Helper functions
+        function getCategoryIcon(category) {
+            const icons = {
+                adrenalin: '<i data-lucide="zap" style="width: 16px; height: 16px; margin-right: 4px;"></i>',
+                relax: '<i data-lucide="flower-2" style="width: 16px; height: 16px; margin-right: 4px;"></i>',
+                food: '<i data-lucide="utensils" style="width: 16px; height: 16px; margin-right: 4px;"></i>',
+                travel: '<i data-lucide="plane" style="width: 16px; height: 16px; margin-right: 4px;"></i>'
+            };
+            return icons[category] || '<i data-lucide="sparkles" style="width: 16px; height: 16px; margin-right: 4px;"></i>';
+        }
+
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Category filters
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.dataset.category;
+
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                renderQuests(category);
+            });
+        });
+
+        // Modals
+        function showLevelUpModal() {
+            document.getElementById('modalLevel').textContent = gameState.level;
+            document.getElementById('levelUpModal').classList.add('show');
+        }
+
+        function closeLevelUpModal() {
+            document.getElementById('levelUpModal').classList.remove('show');
+        }
+
+        function showAchievementModal(achievement) {
+            document.getElementById('achievementModalIcon').innerHTML =
+                `<i data-lucide="${achievement.icon}" style="width: 64px; height: 64px; stroke-width: 2; color: var(--color-warning);"></i>`;
+            document.getElementById('achievementModalText').innerHTML =
+                `Odemkl jsi achievement <strong>${achievement.title}</strong>!<br>${achievement.description}`;
+            document.getElementById('achievementModal').classList.add('show');
+            lucide.createIcons();
+        }
+
+        function closeAchievementModal() {
+            document.getElementById('achievementModal').classList.remove('show');
+        }
+
+        function showAchievementInfo(id) {
+            const ach = gameState.achievements.find(a => a.id === id);
+            if (ach) {
+                const iconNames = {
+                    'target': '🎯', 'sprout': '🌱', 'swords': '⚔️', 'crown': '👑',
+                    'zap': '⚡', 'utensils': '🍽️', 'plane': '✈️', 'flower-2': '🧘',
+                    'flame': '🔥', 'star': '⭐', 'diamond': '💎'
+                };
+                const emoji = iconNames[ach.icon] || '🏆';
+                alert(`${emoji} ${ach.title}\n\n${ach.description}\n\nProgress: ${ach.progress}/${ach.target}\nStatus: ${ach.unlocked ? 'Odemčeno ✓' : 'Zamčeno 🔒'}`);
+            }
+        }
+
+        function showAddQuest() {
+            alert('Tady by bylo rozhraní pro přidání vlastního questu! 🎯\n\nMohl by sis vytvořit vlastní zážitky a přidávat je do svého wishlistu!');
+        }
+
+        // Confetti animation
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const confetti = [];
+            const confettiCount = 50;
+            const colors = ['#006eb9', '#00b2e5', '#088107', '#ffa400', '#ff6b6b'];
+
+            for (let i = 0; i < confettiCount; i++) {
+                confetti.push({
+                    x: Math.random() * canvas.width,
+                    y: -10,
+                    r: Math.random() * 5 + 2,
+                    d: Math.random() * confettiCount,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 10,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+                    tiltAngle: 0
+                });
+            }
+
+            let animationId;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                confetti.forEach((c, i) => {
+                    c.tiltAngle += c.tiltAngleIncremental;
+                    c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+                    c.x += Math.sin(c.d);
+                    c.tilt = Math.sin(c.tiltAngle - i / 3) * 15;
+
+                    ctx.beginPath();
+                    ctx.lineWidth = c.r / 2;
+                    ctx.strokeStyle = c.color;
+                    ctx.moveTo(c.x + c.tilt + c.r / 4, c.y);
+                    ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 4);
+                    ctx.stroke();
+
+                    if (c.y > canvas.height) {
+                        confetti.splice(i, 1);
+                    }
+                });
+
+                if (confetti.length > 0) {
+                    animationId = requestAnimationFrame(draw);
+                } else {
+                    cancelAnimationFrame(animationId);
+                }
+            }
+
+            draw();
+        }
+
+        // Initialize
+        loadState();
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
