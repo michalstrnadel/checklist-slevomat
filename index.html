@@ -884,72 +884,120 @@
         }
 
         .map-path-container {
-            background: var(--color-surface-faded);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             min-height: calc(100vh - 200px);
-            padding: var(--spacing-xl) var(--spacing-md);
+            padding: var(--spacing-xl) 0;
+            padding-bottom: 80px;
             position: relative;
+            overflow: hidden;
+        }
+
+        /* SVG path background */
+        .map-path-svg {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .path-item {
             position: relative;
-            margin-bottom: 80px;
-            padding-left: 60px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: flex-start;
+            z-index: 1;
+            animation: fadeInUp 0.5s ease backwards;
+        }
+
+        .path-item:nth-child(1) { animation-delay: 0s; }
+        .path-item:nth-child(2) { animation-delay: 0.05s; }
+        .path-item:nth-child(3) { animation-delay: 0.1s; }
+        .path-item:nth-child(4) { animation-delay: 0.15s; }
+        .path-item:nth-child(5) { animation-delay: 0.2s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Alternating left-right positioning */
+        .path-item:nth-child(odd) {
+            flex-direction: row;
+            padding-left: 10%;
+            padding-right: 35%;
+        }
+
+        .path-item:nth-child(even) {
+            flex-direction: row-reverse;
+            padding-left: 35%;
+            padding-right: 10%;
         }
 
         .path-item:last-child {
             margin-bottom: 0;
         }
 
-        /* Curved connector */
-        .path-connector {
-            position: absolute;
-            left: 28px;
-            top: 56px;
-            width: 4px;
-            height: 80px;
-            background: #d1d5db;
-            border-radius: var(--radius-full);
-        }
-
-        .path-item:last-child .path-connector {
-            display: none;
-        }
-
-        /* Alternating curve */
-        .path-item:nth-child(even) .path-connector {
-            left: auto;
-            right: calc(100% - 32px);
-        }
-
         .path-icon-wrapper {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 56px;
-            height: 56px;
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
             border-radius: var(--radius-full);
             background: white;
-            border: 4px solid #d1d5db;
+            border: 5px solid #cbd5e1;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2;
-            transition: all 0.3s;
+            z-index: 3;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .path-item.completed .path-icon-wrapper {
-            background: var(--color-primary);
-            border-color: var(--color-primary);
+            background: var(--color-success);
+            border-color: var(--color-success);
+            box-shadow: 0 6px 20px rgba(8, 129, 7, 0.4);
         }
 
-        .path-item.completed .path-connector {
-            background: var(--color-primary);
+        .path-item.completed .path-icon-wrapper::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: var(--color-success);
+            opacity: 0.3;
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
         }
 
         .path-icon {
-            width: 28px;
-            height: 28px;
-            color: #9ca3af;
+            width: 32px;
+            height: 32px;
+            color: #94a3b8;
+            stroke-width: 2.5;
+            position: relative;
+            z-index: 1;
         }
 
         .path-item.completed .path-icon {
@@ -958,16 +1006,31 @@
 
         .path-card {
             background: white;
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-md);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            margin-left: var(--spacing-md);
+            margin-right: var(--spacing-md);
+            border: 2px solid transparent;
+        }
+
+        .path-item:nth-child(even) .path-card {
+            margin-left: var(--spacing-md);
+            margin-right: var(--spacing-md);
         }
 
         .path-card:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--color-primary);
+        }
+
+        .path-item.completed .path-card {
+            background: linear-gradient(135deg, rgba(8, 129, 7, 0.05) 0%, rgba(8, 129, 7, 0.02) 100%);
+            border-color: var(--color-success);
         }
 
         .path-card-header {
@@ -1313,27 +1376,27 @@
             lastCompletedDate: null,
             quests: [
                 // Adrenalin
-                { id: 1, title: 'Proletět se helikoptérou', category: 'adrenalin', rarity: 'epic', xp: 100, people: 2347, completed: false },
-                { id: 2, title: 'Skok padákem', category: 'adrenalin', rarity: 'legendary', xp: 150, people: 892, completed: false },
-                { id: 3, title: 'Bungee jumping', category: 'adrenalin', rarity: 'epic', xp: 120, people: 1523, completed: false },
-                { id: 4, title: 'Jízda Ferrari', category: 'adrenalin', rarity: 'rare', xp: 80, people: 3421, completed: false },
+                { id: 1, title: 'Lanové centrum', category: 'adrenalin', rarity: 'common', xp: 30, people: 4521, completed: false },
+                { id: 2, title: 'Jízda na motokáře', category: 'adrenalin', rarity: 'rare', xp: 60, people: 3247, completed: false },
+                { id: 3, title: 'Paintball s partou', category: 'adrenalin', rarity: 'common', xp: 35, people: 5632, completed: false },
+                { id: 4, title: 'Laser game', category: 'adrenalin', rarity: 'common', xp: 25, people: 6891, completed: false },
 
                 // Relax
-                { id: 5, title: 'Zkusit head-spa', category: 'relax', rarity: 'common', xp: 30, people: 5632, completed: false },
-                { id: 6, title: 'Thajská masáž', category: 'relax', rarity: 'common', xp: 25, people: 8934, completed: false },
-                { id: 7, title: 'Den ve wellness', category: 'relax', rarity: 'rare', xp: 50, people: 4521, completed: false },
+                { id: 5, title: 'Zkusit head-spa', category: 'relax', rarity: 'rare', xp: 50, people: 2134, completed: false },
+                { id: 6, title: 'Thajská masáž', category: 'relax', rarity: 'common', xp: 40, people: 8934, completed: false },
+                { id: 7, title: 'Víkend ve wellness', category: 'relax', rarity: 'epic', xp: 80, people: 1876, completed: false },
 
                 // Food
-                { id: 8, title: 'Snídat v hotelu Kempinski', category: 'food', rarity: 'rare', xp: 60, people: 1234, completed: false },
-                { id: 9, title: 'Ochutnávka sushi', category: 'food', rarity: 'common', xp: 35, people: 6789, completed: false },
-                { id: 10, title: 'Michelin restaurant', category: 'food', rarity: 'legendary', xp: 200, people: 432, completed: false },
-                { id: 11, title: 'Degustační menu', category: 'food', rarity: 'epic', xp: 90, people: 2156, completed: false },
+                { id: 8, title: 'Snídaně v 4* hotelu', category: 'food', rarity: 'rare', xp: 45, people: 3421, completed: false },
+                { id: 9, title: 'All you can eat sushi', category: 'food', rarity: 'common', xp: 35, people: 7234, completed: false },
+                { id: 10, title: 'Degustační menu', category: 'food', rarity: 'epic', xp: 70, people: 2156, completed: false },
+                { id: 11, title: 'Vinařský kurz s ochutnávkou', category: 'food', rarity: 'rare', xp: 55, people: 1987, completed: false },
 
                 // Travel
-                { id: 12, title: 'Navštívit pyramidy', category: 'travel', rarity: 'epic', xp: 150, people: 3245, completed: false },
-                { id: 13, title: 'Spatřit polární záři', category: 'travel', rarity: 'legendary', xp: 180, people: 678, completed: false },
-                { id: 14, title: 'Safari v Africe', category: 'travel', rarity: 'legendary', xp: 200, people: 543, completed: false },
-                { id: 15, title: 'Road trip po USA', category: 'travel', rarity: 'epic', xp: 120, people: 2891, completed: false },
+                { id: 12, title: 'Víkend v Praze na hotelu', category: 'travel', rarity: 'rare', xp: 60, people: 5432, completed: false },
+                { id: 13, title: 'Výlet do Drážďan', category: 'travel', rarity: 'common', xp: 40, people: 4123, completed: false },
+                { id: 14, title: 'Víkend v Karlových Varech', category: 'travel', rarity: 'rare', xp: 65, people: 3654, completed: false },
+                { id: 15, title: 'Road trip po polských Krkonoších', category: 'travel', rarity: 'epic', xp: 90, people: 1234, completed: false },
             ],
             achievements: [
                 { id: 'first', title: 'První krok', icon: 'target', description: 'Splň první zážitek', unlocked: false, progress: 0, target: 1 },
@@ -1708,32 +1771,71 @@
         function renderMapView() {
             const container = document.getElementById('mapPathContainer');
 
-            container.innerHTML = gameState.quests.map((quest, index) => `
-                <div class="path-item ${quest.completed ? 'completed' : ''}" onclick="toggleQuest(${quest.id})">
-                    <div class="path-icon-wrapper">
-                        <i data-lucide="${quest.completed ? 'check' : getCategoryLucideIcon(quest.category)}" class="path-icon"></i>
-                    </div>
-                    ${index < gameState.quests.length - 1 ? '<div class="path-connector"></div>' : ''}
-                    <div class="path-card">
-                        <div class="path-card-header">
-                            <div>
-                                <div class="path-card-meta">Zážitek ${index + 1} • ${getCategoryName(quest.category)}</div>
-                                <div class="path-card-title">${quest.title}</div>
+            // Generate SVG path
+            const svgPath = generateWavyPath(gameState.quests.length);
+
+            container.innerHTML = `
+                <svg class="map-path-svg" viewBox="0 0 400 ${gameState.quests.length * 180}" preserveAspectRatio="xMidYMin slice">
+                    <defs>
+                        <linearGradient id="pathGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#cbd5e1;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#94a3b8;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="${svgPath}" stroke="url(#pathGradient)" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.5"/>
+                </svg>
+                ${gameState.quests.map((quest, index) => `
+                    <div class="path-item ${quest.completed ? 'completed' : ''}" onclick="toggleQuest(${quest.id})">
+                        <div class="path-icon-wrapper">
+                            <i data-lucide="${quest.completed ? 'check' : getCategoryLucideIcon(quest.category)}" class="path-icon"></i>
+                        </div>
+                        <div class="path-card">
+                            <div class="path-card-header">
+                                <div>
+                                    <div class="path-card-meta">Zážitek ${index + 1} • ${getCategoryName(quest.category)}</div>
+                                    <div class="path-card-title">${quest.title}</div>
+                                </div>
+                                <span class="path-card-xp">+${quest.xp} XP</span>
                             </div>
-                            <span class="path-card-xp">+${quest.xp}</span>
-                        </div>
-                        <div class="path-card-info">
-                            <span class="rarity-badge rarity-${quest.rarity}">${quest.rarity}</span>
-                            <span style="display: flex; align-items: center; gap: 4px;">
-                                <i data-lucide="users" style="width: 12px; height: 12px;"></i>
-                                ${quest.people.toLocaleString()}
-                            </span>
+                            <div class="path-card-info">
+                                <span class="rarity-badge rarity-${quest.rarity}">${quest.rarity}</span>
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <i data-lucide="users" style="width: 12px; height: 12px;"></i>
+                                    ${quest.people.toLocaleString()}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('')}
+            `;
 
             lucide.createIcons();
+        }
+
+        // Generate wavy path for SVG
+        function generateWavyPath(numItems) {
+            const startY = 32;
+            const spacing = 180;
+            const amplitude = 60;
+            const centerX = 200;
+
+            let path = `M ${centerX} ${startY}`;
+
+            for (let i = 0; i < numItems - 1; i++) {
+                const y1 = startY + (i * spacing);
+                const y2 = startY + ((i + 1) * spacing);
+                const midY = (y1 + y2) / 2;
+
+                // Alternate left and right
+                const direction = i % 2 === 0 ? 1 : -1;
+                const controlX = centerX + (amplitude * direction);
+
+                // Smooth S-curve
+                path += ` C ${centerX} ${y1 + spacing * 0.3}, ${controlX} ${midY - spacing * 0.2}, ${controlX} ${midY}`;
+                path += ` C ${controlX} ${midY + spacing * 0.2}, ${centerX} ${y2 - spacing * 0.3}, ${centerX} ${y2}`;
+            }
+
+            return path;
         }
 
         // Helper functions
