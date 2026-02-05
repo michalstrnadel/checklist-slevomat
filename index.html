@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slevomat - Quest & Achievements</title>
+    <title>Slevomat - Zážitky</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
@@ -65,6 +65,45 @@
             box-shadow: 0 0 60px rgba(0, 0, 0, 0.15);
             position: relative;
             overflow: hidden;
+        }
+
+        /* Version Switcher */
+        .version-switcher {
+            background: white;
+            border-bottom: 2px solid var(--color-border);
+            padding: var(--spacing-sm);
+            display: flex;
+            gap: var(--spacing-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .version-btn {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-surface-faded);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            transition: all 0.2s;
+        }
+
+        .version-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .version-content {
+            display: none;
+        }
+
+        .version-content.active {
+            display: block;
         }
 
         /* Header */
@@ -177,24 +216,6 @@
             border-radius: var(--radius-full);
             transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 0 10px rgba(255, 164, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
         }
 
         /* Quick Stats Cards */
@@ -296,8 +317,8 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Daily Challenge */
-        .daily-challenge {
+        /* Monthly Challenge */
+        .monthly-challenge {
             background: linear-gradient(135deg, #ffa400 0%, #ff6b6b 100%);
             color: white;
             padding: var(--spacing-lg);
@@ -308,7 +329,7 @@
             box-shadow: 0 4px 16px rgba(255, 164, 0, 0.3);
         }
 
-        .daily-challenge::before {
+        .monthly-challenge::before {
             content: '⚡';
             position: absolute;
             top: -10px;
@@ -391,18 +412,6 @@
             background: linear-gradient(135deg, rgba(8, 129, 7, 0.05) 0%, rgba(8, 129, 7, 0.02) 100%);
         }
 
-        .quest-item.completed::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            right: -30px;
-            transform: translateY(-50%);
-            font-size: 100px;
-            color: var(--color-success);
-            opacity: 0.05;
-            font-weight: 700;
-        }
-
         .quest-header {
             display: flex;
             justify-content: space-between;
@@ -437,19 +446,12 @@
         .checkbox.checked {
             background: var(--color-success);
             border: 3px solid var(--color-success);
-            animation: checkPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         .checkbox.checked::after {
             content: '✓';
             color: white;
             font-weight: 700;
-        }
-
-        @keyframes checkPop {
-            0% { transform: scale(0.8) rotate(-45deg); }
-            50% { transform: scale(1.2) rotate(10deg); }
-            100% { transform: scale(1) rotate(0deg); }
         }
 
         .quest-title {
@@ -499,6 +501,38 @@
             gap: 4px;
         }
 
+        /* Category Filters */
+        .category-filters {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 2px;
+        }
+
+        .category-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: white;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
         /* Achievement Card */
         .achievement-grid {
             display: grid;
@@ -535,7 +569,6 @@
         .achievement-icon {
             font-size: 36px;
             margin-bottom: var(--spacing-sm);
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .achievement-title {
@@ -549,36 +582,41 @@
             color: var(--color-text-secondary);
         }
 
-        /* Category Filters */
-        .category-filters {
-            display: flex;
-            gap: var(--spacing-sm);
+        /* Section Title */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
             margin-bottom: var(--spacing-lg);
-            overflow-x: auto;
-            scrollbar-width: none;
-            padding: 2px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
         }
 
-        .category-filters::-webkit-scrollbar {
-            display: none;
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2.5;
         }
 
-        .filter-btn {
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: white;
-            border: 2px solid var(--color-border);
-            border-radius: var(--radius-full);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
+        .tab-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 6px;
+            stroke-width: 2;
+            flex-shrink: 0;
         }
 
-        .filter-btn.active {
-            background: var(--color-primary);
-            color: white;
-            border-color: var(--color-primary);
+        .tab {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .stat-icon {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2.5;
         }
 
         /* Confetti Canvas */
@@ -591,7 +629,6 @@
             pointer-events: none;
             z-index: 9999;
         }
-
 
         /* Level Up Modal */
         .modal {
@@ -631,12 +668,6 @@
         .modal-icon {
             font-size: 64px;
             margin-bottom: var(--spacing-md);
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
         }
 
         .modal-title {
@@ -673,183 +704,346 @@
             box-shadow: 0 8px 24px rgba(0, 110, 185, 0.4);
         }
 
-        /* Section Title */
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: var(--spacing-lg);
+        /* ==================== POKUS 2: MAPA ZÁŽITKŮ ==================== */
+
+        .map-header {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--spacing-lg);
+            padding-top: 50px;
+            position: relative;
+        }
+
+        .map-title-section {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
         }
 
-        .section-icon {
-            width: 24px;
-            height: 24px;
-            stroke-width: 2.5;
+        .map-title {
+            font-size: 24px;
+            font-weight: 700;
         }
 
-        .tab-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 6px;
-            stroke-width: 2;
-            flex-shrink: 0;
+        .map-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: var(--spacing-md);
         }
 
-        .tab {
+        .completion-badge {
+            background: var(--color-success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .map-path-container {
+            background: var(--color-surface-faded);
+            min-height: calc(100vh - 200px);
+            padding: var(--spacing-xl) var(--spacing-md);
+            position: relative;
+        }
+
+        .path-item {
+            position: relative;
+            margin-bottom: 80px;
+            padding-left: 60px;
+        }
+
+        .path-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Curved connector */
+        .path-connector {
+            position: absolute;
+            left: 28px;
+            top: 56px;
+            width: 4px;
+            height: 80px;
+            background: #d1d5db;
+            border-radius: var(--radius-full);
+        }
+
+        .path-item:last-child .path-connector {
+            display: none;
+        }
+
+        /* Alternating curve */
+        .path-item:nth-child(even) .path-connector {
+            left: auto;
+            right: calc(100% - 32px);
+        }
+
+        .path-icon-wrapper {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-full);
+            background: white;
+            border: 4px solid #d1d5db;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            z-index: 2;
+            transition: all 0.3s;
         }
 
-        .stat-icon {
-            width: 16px;
-            height: 16px;
-            stroke-width: 2.5;
+        .path-item.completed .path-icon-wrapper {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .path-item.completed .path-connector {
+            background: var(--color-primary);
+        }
+
+        .path-icon {
+            width: 28px;
+            height: 28px;
+            color: #9ca3af;
+        }
+
+        .path-item.completed .path-icon {
+            color: white;
+        }
+
+        .path-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .path-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .path-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .path-card-meta {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .path-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .path-card-info {
+            display: flex;
+            gap: var(--spacing-md);
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .path-card-xp {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 11px;
         }
     </style>
 </head>
 <body>
     <div class="mobile-container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-top">
-                <div class="user-section">
-                    <div class="avatar">L</div>
-                    <div class="user-info">
-                        <h2>Lucie</h2>
-                        <div class="user-stats">
-                            <div class="stat-item">
-                                <i data-lucide="flame" class="stat-icon" style="color: #ffa400;"></i>
-                                <span class="streak-badge"><span id="streak">0</span> dní</span>
-                            </div>
-                            <div class="stat-item">
-                                <i data-lucide="coins" class="stat-icon" style="color: #ffa400;"></i>
-                                <span id="credits">0</span> kreditů
+        <!-- Version Switcher -->
+        <div class="version-switcher">
+            <button class="version-btn active" onclick="switchVersion(1)">Pokus 1</button>
+            <button class="version-btn" onclick="switchVersion(2)">Pokus 2</button>
+            <button class="version-btn" onclick="switchVersion(3)">Pokus 3</button>
+        </div>
+
+        <!-- ==================== POKUS 1: GAMIFIKACE ==================== -->
+        <div class="version-content active" id="version1">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-top">
+                    <div class="user-section">
+                        <div class="avatar">L</div>
+                        <div class="user-info">
+                            <h2>Lucie</h2>
+                            <div class="user-stats">
+                                <div class="stat-item">
+                                    <i data-lucide="flame" class="stat-icon" style="color: #ffa400;"></i>
+                                    <span class="streak-badge"><span id="streak">0</span> dní</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i data-lucide="coins" class="stat-icon" style="color: #ffa400;"></i>
+                                    <span id="credits">0</span> kreditů
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="level-section">
+                    <div class="level-header">
+                        <div class="level-badge">Level <span id="level">1</span></div>
+                        <div class="xp-text"><span id="currentXP">0</span> / <span id="maxXP">100</span> XP</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="xpProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCompleted">0</div>
+                    <div class="stat-label">Splněno</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalQuests">15</div>
+                    <div class="stat-label">Celkem</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="achievementCount">0/12</div>
+                    <div class="stat-label">Achievementy</div>
+                </div>
             </div>
 
-            <div class="level-section">
-                <div class="level-header">
-                    <div class="level-badge">Level <span id="level">1</span></div>
-                    <div class="xp-text"><span id="currentXP">0</span> / <span id="maxXP">100</span> XP</div>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="xpProgress" style="width: 0%"></div>
-                </div>
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="quests">
+                    <i data-lucide="target" class="tab-icon"></i>
+                    Questy
+                    <span class="tab-badge" id="monthlyBadge">1</span>
+                </button>
+                <button class="tab" data-tab="achievements">
+                    <i data-lucide="award" class="tab-icon"></i>
+                    Achievementy
+                </button>
+                <button class="tab" data-tab="stats">
+                    <i data-lucide="bar-chart-3" class="tab-icon"></i>
+                    Stats
+                </button>
             </div>
-        </header>
 
-        <!-- Quick Stats -->
-        <div class="quick-stats">
-            <div class="stat-card">
-                <div class="stat-value" id="totalCompleted">0</div>
-                <div class="stat-label">Splněno</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="totalQuests">15</div>
-                <div class="stat-label">Celkem</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="achievementCount">0/12</div>
-                <div class="stat-label">Achievementy</div>
+            <!-- Content -->
+            <div class="content">
+                <!-- Quests Tab -->
+                <div class="tab-content active" id="quests">
+                    <!-- Monthly Challenge -->
+                    <div class="monthly-challenge">
+                        <div class="challenge-header" style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
+                            Měsíční výzva
+                        </div>
+                        <div class="challenge-title">Splň alespoň 3 zážitky tento měsíc!</div>
+                        <div class="challenge-progress">
+                            <div class="challenge-progress-fill" id="monthlyProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="challenge-reward">
+                            <span>Progress: <span id="monthlyCount">0</span>/3</span>
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <i data-lucide="gift" style="width: 16px; height: 16px;"></i>
+                                +200 XP
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Category Filters -->
+                    <div class="category-filters">
+                        <button class="filter-btn active" data-category="all" style="display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
+                            Vše
+                        </button>
+                        <button class="filter-btn" data-category="adrenalin" style="display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="zap" style="width: 16px; height: 16px;"></i>
+                            Adrenalin
+                        </button>
+                        <button class="filter-btn" data-category="relax" style="display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="flower-2" style="width: 16px; height: 16px;"></i>
+                            Relax
+                        </button>
+                        <button class="filter-btn" data-category="food" style="display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="utensils" style="width: 16px; height: 16px;"></i>
+                            Food
+                        </button>
+                        <button class="filter-btn" data-category="travel" style="display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="plane" style="width: 16px; height: 16px;"></i>
+                            Travel
+                        </button>
+                    </div>
+
+                    <div class="section-title">
+                        <i data-lucide="clipboard-list" class="section-icon"></i>
+                        <span>Tvoje Zážitky</span>
+                    </div>
+
+                    <!-- Quest List -->
+                    <div id="questList"></div>
+                </div>
+
+                <!-- Achievements Tab -->
+                <div class="tab-content" id="achievements">
+                    <div class="section-title">
+                        <i data-lucide="award" class="section-icon"></i>
+                        <span>Tvoje Achievementy</span>
+                    </div>
+                    <div class="achievement-grid" id="achievementGrid"></div>
+                </div>
+
+                <!-- Stats Tab -->
+                <div class="tab-content" id="stats">
+                    <div class="section-title">
+                        <i data-lucide="trending-up" class="section-icon"></i>
+                        <span>Tvoje Statistiky</span>
+                    </div>
+                    <div id="statsContent"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab active" data-tab="quests">
-                <i data-lucide="target" class="tab-icon"></i>
-                Questy
-                <span class="tab-badge" id="dailyBadge">1</span>
-            </button>
-            <button class="tab" data-tab="achievements">
-                <i data-lucide="award" class="tab-icon"></i>
-                Achievementy
-            </button>
-            <button class="tab" data-tab="stats">
-                <i data-lucide="bar-chart-3" class="tab-icon"></i>
-                Stats
-            </button>
+        <!-- ==================== POKUS 2: MAPA ZÁŽITKŮ ==================== -->
+        <div class="version-content" id="version2">
+            <div class="map-header">
+                <div class="map-title-section">
+                    <div>
+                        <div class="map-title">Mapa zážitků</div>
+                        <div class="map-subtitle">Tvoje cesta za dobrodružstvím</div>
+                    </div>
+                    <div class="completion-badge">
+                        <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i>
+                        <span id="mapCompleted">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-path-container" id="mapPathContainer"></div>
         </div>
 
-        <!-- Content -->
-        <div class="content">
-            <!-- Quests Tab -->
-            <div class="tab-content active" id="quests">
-                <!-- Monthly Challenge -->
-                <div class="daily-challenge">
-                    <div class="challenge-header" style="display: flex; align-items: center; gap: 8px;">
-                        <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
-                        Měsíční výzva
-                    </div>
-                    <div class="challenge-title">Splň alespoň 3 zážitky tento měsíc!</div>
-                    <div class="challenge-progress">
-                        <div class="challenge-progress-fill" id="dailyProgress" style="width: 0%"></div>
-                    </div>
-                    <div class="challenge-reward">
-                        <span>Progress: <span id="dailyCount">0</span>/3</span>
-                        <span style="display: flex; align-items: center; gap: 4px;">
-                            <i data-lucide="gift" style="width: 16px; height: 16px;"></i>
-                            +200 XP
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Category Filters -->
-                <div class="category-filters">
-                    <button class="filter-btn active" data-category="all" style="display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
-                        Vše
-                    </button>
-                    <button class="filter-btn" data-category="adrenalin" style="display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="zap" style="width: 16px; height: 16px;"></i>
-                        Adrenalin
-                    </button>
-                    <button class="filter-btn" data-category="relax" style="display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="flower-2" style="width: 16px; height: 16px;"></i>
-                        Relax
-                    </button>
-                    <button class="filter-btn" data-category="food" style="display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="utensils" style="width: 16px; height: 16px;"></i>
-                        Food
-                    </button>
-                    <button class="filter-btn" data-category="travel" style="display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="plane" style="width: 16px; height: 16px;"></i>
-                        Travel
-                    </button>
-                </div>
-
-                <div class="section-title">
-                    <i data-lucide="clipboard-list" class="section-icon"></i>
-                    <span>Tvoje Questy</span>
-                </div>
-
-                <!-- Quest List -->
-                <div id="questList"></div>
-            </div>
-
-            <!-- Achievements Tab -->
-            <div class="tab-content" id="achievements">
-                <div class="section-title">
-                    <i data-lucide="award" class="section-icon"></i>
-                    <span>Tvoje Achievementy</span>
-                </div>
-                <div class="achievement-grid" id="achievementGrid"></div>
-            </div>
-
-            <!-- Stats Tab -->
-            <div class="tab-content" id="stats">
-                <div class="section-title">
-                    <i data-lucide="trending-up" class="section-icon"></i>
-                    <span>Tvoje Statistiky</span>
-                </div>
-                <div id="statsContent"></div>
+        <!-- ==================== POKUS 3: TBD ==================== -->
+        <div class="version-content" id="version3">
+            <div class="content" style="padding-top: 60px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🚧</div>
+                <h2 style="margin-bottom: 8px;">Pokus 3</h2>
+                <p style="color: var(--color-text-secondary);">Připravujeme...</p>
             </div>
         </div>
 
@@ -915,20 +1109,44 @@
                 { id: 15, title: 'Road trip po USA', category: 'travel', rarity: 'epic', xp: 120, people: 2891, completed: false },
             ],
             achievements: [
-                { id: 'first', title: 'První krok', icon: 'target', description: 'Splň první quest', unlocked: false, progress: 0, target: 1 },
-                { id: 'beginner', title: 'Začátečník', icon: 'sprout', description: 'Splň 5 questů', unlocked: false, progress: 0, target: 5 },
-                { id: 'adventurer', title: 'Dobrodruh', icon: 'swords', description: 'Splň 10 questů', unlocked: false, progress: 0, target: 10 },
-                { id: 'master', title: 'Mistr', icon: 'crown', description: 'Splň všechny questy', unlocked: false, progress: 0, target: 15 },
-                { id: 'adrenalin', title: 'Adrenalinový junkie', icon: 'zap', description: 'Splň všechny adrenalin questy', unlocked: false, progress: 0, target: 4 },
-                { id: 'foodie', title: 'Foodie', icon: 'utensils', description: 'Splň všechny food questy', unlocked: false, progress: 0, target: 4 },
-                { id: 'traveler', title: 'Cestovatel', icon: 'plane', description: 'Splň všechny travel questy', unlocked: false, progress: 0, target: 4 },
-                { id: 'zen', title: 'Zen Master', icon: 'flower-2', description: 'Splň všechny relax questy', unlocked: false, progress: 0, target: 3 },
+                { id: 'first', title: 'První krok', icon: 'target', description: 'Splň první zážitek', unlocked: false, progress: 0, target: 1 },
+                { id: 'beginner', title: 'Začátečník', icon: 'sprout', description: 'Splň 5 zážitků', unlocked: false, progress: 0, target: 5 },
+                { id: 'adventurer', title: 'Dobrodruh', icon: 'swords', description: 'Splň 10 zážitků', unlocked: false, progress: 0, target: 10 },
+                { id: 'master', title: 'Mistr', icon: 'crown', description: 'Splň všechny zážitky', unlocked: false, progress: 0, target: 15 },
+                { id: 'adrenalin', title: 'Adrenalinový junkie', icon: 'zap', description: 'Splň všechny adrenalin zážitky', unlocked: false, progress: 0, target: 4 },
+                { id: 'foodie', title: 'Foodie', icon: 'utensils', description: 'Splň všechny food zážitky', unlocked: false, progress: 0, target: 4 },
+                { id: 'traveler', title: 'Cestovatel', icon: 'plane', description: 'Splň všechny travel zážitky', unlocked: false, progress: 0, target: 4 },
+                { id: 'zen', title: 'Zen Master', icon: 'flower-2', description: 'Splň všechny relax zážitky', unlocked: false, progress: 0, target: 3 },
                 { id: 'streak3', title: 'Na vlně', icon: 'flame', description: '3 dny po sobě', unlocked: false, progress: 0, target: 3 },
                 { id: 'streak7', title: 'Týdenní série', icon: 'flame', description: '7 dní po sobě', unlocked: false, progress: 0, target: 7 },
                 { id: 'level5', title: 'Level 5', icon: 'star', description: 'Dosáhni Level 5', unlocked: false, progress: 1, target: 5 },
-                { id: 'legendary', title: 'Legendární', icon: 'diamond', description: 'Splň legendary quest', unlocked: false, progress: 0, target: 1 },
+                { id: 'legendary', title: 'Legendární', icon: 'diamond', description: 'Splň legendary zážitek', unlocked: false, progress: 0, target: 1 },
             ]
         };
+
+        let currentVersion = 1;
+
+        // Version Switcher
+        function switchVersion(version) {
+            currentVersion = version;
+
+            // Update buttons
+            document.querySelectorAll('.version-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === version);
+            });
+
+            // Update content
+            document.querySelectorAll('.version-content').forEach((content, idx) => {
+                content.classList.toggle('active', idx + 1 === version);
+            });
+
+            // Render appropriate version
+            if (version === 2) {
+                renderMapView();
+            }
+
+            lucide.createIcons();
+        }
 
         // Load state from localStorage
         function loadState() {
@@ -1005,6 +1223,11 @@
 
             updateUI();
             saveState();
+
+            // Re-render map if in version 2
+            if (currentVersion === 2) {
+                renderMapView();
+            }
         }
 
         // Update streak
@@ -1062,7 +1285,7 @@
             if (progress >= achievement.target && !achievement.unlocked) {
                 achievement.unlocked = true;
                 showAchievementModal(achievement);
-                addXP(50); // Bonus XP for achievement
+                addXP(50);
             }
         }
 
@@ -1085,16 +1308,19 @@
             const unlockedCount = gameState.achievements.filter(a => a.unlocked).length;
             document.getElementById('achievementCount').textContent = `${unlockedCount}/${gameState.achievements.length}`;
 
-            // Daily challenge
-            const dailyCompleted = gameState.quests.filter(q => q.completed).slice(0, 3).length;
-            document.getElementById('dailyCount').textContent = dailyCompleted;
-            document.getElementById('dailyProgress').style.width = (dailyCompleted / 3 * 100) + '%';
+            // Monthly challenge
+            const monthlyCompleted = Math.min(gameState.totalCompleted, 3);
+            document.getElementById('monthlyCount').textContent = monthlyCompleted;
+            document.getElementById('monthlyProgress').style.width = (monthlyCompleted / 3 * 100) + '%';
 
-            if (dailyCompleted >= 3) {
-                document.getElementById('dailyBadge').style.display = 'none';
+            if (monthlyCompleted >= 3) {
+                document.getElementById('monthlyBadge').style.display = 'none';
             } else {
-                document.getElementById('dailyBadge').style.display = 'block';
+                document.getElementById('monthlyBadge').style.display = 'block';
             }
+
+            // Map completed count
+            document.getElementById('mapCompleted').textContent = gameState.totalCompleted;
 
             renderQuests();
             renderAchievements();
@@ -1204,6 +1430,38 @@
             lucide.createIcons();
         }
 
+        // Render Map View (Pokus 2)
+        function renderMapView() {
+            const container = document.getElementById('mapPathContainer');
+
+            container.innerHTML = gameState.quests.map((quest, index) => `
+                <div class="path-item ${quest.completed ? 'completed' : ''}" onclick="toggleQuest(${quest.id})">
+                    <div class="path-icon-wrapper">
+                        <i data-lucide="${quest.completed ? 'check' : getCategoryLucideIcon(quest.category)}" class="path-icon"></i>
+                    </div>
+                    ${index < gameState.quests.length - 1 ? '<div class="path-connector"></div>' : ''}
+                    <div class="path-card">
+                        <div class="path-card-header">
+                            <div>
+                                <div class="path-card-meta">Zážitek ${index + 1} • ${getCategoryName(quest.category)}</div>
+                                <div class="path-card-title">${quest.title}</div>
+                            </div>
+                            <span class="path-card-xp">+${quest.xp}</span>
+                        </div>
+                        <div class="path-card-info">
+                            <span class="rarity-badge rarity-${quest.rarity}">${quest.rarity}</span>
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <i data-lucide="users" style="width: 12px; height: 12px;"></i>
+                                ${quest.people.toLocaleString()}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
         // Helper functions
         function getCategoryIcon(category) {
             const icons = {
@@ -1213,6 +1471,26 @@
                 travel: '<i data-lucide="plane" style="width: 16px; height: 16px; margin-right: 4px;"></i>'
             };
             return icons[category] || '<i data-lucide="sparkles" style="width: 16px; height: 16px; margin-right: 4px;"></i>';
+        }
+
+        function getCategoryLucideIcon(category) {
+            const icons = {
+                adrenalin: 'zap',
+                relax: 'flower-2',
+                food: 'utensils',
+                travel: 'plane'
+            };
+            return icons[category] || 'star';
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                adrenalin: 'Adrenalin',
+                relax: 'Relax',
+                food: 'Food',
+                travel: 'Travel'
+            };
+            return names[category] || category;
         }
 
         // Tabs
@@ -1276,10 +1554,6 @@
             }
         }
 
-        function showAddQuest() {
-            alert('Tady by bylo rozhraní pro přidání vlastního questu! 🎯\n\nMohl by sis vytvořit vlastní zážitky a přidávat je do svého wishlistu!');
-        }
-
         // Confetti animation
         function launchConfetti() {
             const canvas = document.getElementById('confetti');
@@ -1338,8 +1612,6 @@
 
         // Initialize
         loadState();
-
-        // Initialize Lucide icons
         lucide.createIcons();
     </script>
 </body>
