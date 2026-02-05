@@ -1068,6 +1068,202 @@
             font-weight: 600;
             font-size: 11px;
         }
+
+        /* ==================== POKUS 3: BALÓNKOVÁ HRA ==================== */
+
+        .balloon-game-container {
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #FFF8DC 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balloon-game-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-lg);
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .balloon-game-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+
+        .balloon-game-stats {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-md);
+        }
+
+        .balloon-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .balloon-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .balloon-stat-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .balloon-canvas {
+            width: 100%;
+            height: calc(100vh - 200px);
+            display: block;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .balloon-prize-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .balloon-prize-modal.show {
+            display: flex;
+        }
+
+        .balloon-prize-content {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            max-width: 350px;
+            text-align: center;
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .balloon-prize-emoji {
+            font-size: 80px;
+            margin-bottom: var(--spacing-md);
+            animation: rotate 0.5s ease;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg) scale(0); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .balloon-prize-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .balloon-prize-text {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.6;
+        }
+
+        .balloon-prize-btn {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .balloon-prize-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 110, 185, 0.4);
+        }
+
+        .balloon-instructions {
+            padding: var(--spacing-lg);
+            text-align: center;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+
+        .balloon-start-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(135, 206, 235, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .balloon-start-overlay.hidden {
+            display: none;
+        }
+
+        .balloon-start-btn {
+            padding: var(--spacing-lg) var(--spacing-xl);
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+            color: white;
+            border: none;
+            border-radius: var(--radius-xl);
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0, 110, 185, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .balloon-start-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 32px rgba(0, 110, 185, 0.6);
+        }
     </style>
 </head>
 <body>
@@ -1328,12 +1524,50 @@
             <div class="map-path-container" id="mapPathContainer"></div>
         </div>
 
-        <!-- ==================== POKUS 3: TBD ==================== -->
+        <!-- ==================== POKUS 3: BALÓNKOVÁ HRA ==================== -->
         <div class="version-content" id="version3">
-            <div class="content" style="padding-top: 60px; text-align: center;">
-                <div style="font-size: 48px; margin-bottom: 16px;">🚧</div>
-                <h2 style="margin-bottom: 8px;">Pokus 3</h2>
-                <p style="color: var(--color-text-secondary);">Připravujeme...</p>
+            <div class="balloon-game-container">
+                <!-- Header -->
+                <div class="balloon-game-header">
+                    <div class="balloon-game-title">
+                        🎈 Praskej balónky!
+                    </div>
+                    <div class="balloon-game-stats">
+                        <div class="balloon-stat">
+                            <div class="balloon-stat-value">
+                                <span id="balloonPopped">0</span> / 30
+                            </div>
+                            <div class="balloon-stat-label">Prasknuté balónky</div>
+                        </div>
+                        <div class="balloon-stat">
+                            <div class="balloon-stat-value" id="balloonWins">0</div>
+                            <div class="balloon-stat-label">Výhry</div>
+                        </div>
+                    </div>
+                    <div class="balloon-instructions">
+                        🎯 Praskni 30 balónků a hledej výhry!
+                    </div>
+                </div>
+
+                <!-- Start Overlay -->
+                <div class="balloon-start-overlay" id="balloonStartOverlay">
+                    <button class="balloon-start-btn" onclick="startBalloonGameNow()">
+                        🎈 ZAČÍT HRU
+                    </button>
+                </div>
+
+                <!-- Game Canvas -->
+                <canvas id="balloonCanvas" class="balloon-canvas"></canvas>
+            </div>
+
+            <!-- Prize Modal -->
+            <div class="balloon-prize-modal" id="balloonPrizeModal">
+                <div class="balloon-prize-content">
+                    <div class="balloon-prize-emoji" id="prizeEmoji">🎉</div>
+                    <div class="balloon-prize-title" id="prizeTitle">Gratulace!</div>
+                    <div class="balloon-prize-text" id="prizeText">Vyhráváš skvělou cenu!</div>
+                    <button class="balloon-prize-btn" onclick="closePrizeModal()">Pokračovat ve hře</button>
+                </div>
             </div>
         </div>
 
@@ -1432,8 +1666,16 @@
 
             // Render appropriate version
             if (version === 2) {
+                stopBalloonGame();
                 renderMapView();
                 updateProfileRole();
+            } else if (version === 3) {
+                // Initialize balloon game
+                setTimeout(() => {
+                    initBalloonGame();
+                }, 100);
+            } else {
+                stopBalloonGame();
             }
 
             lucide.createIcons();
@@ -1984,6 +2226,371 @@
             }
 
             draw();
+        }
+
+        // ==================== BALLOON GAME (Pokus 3) ====================
+
+        const balloonGame = {
+            canvas: null,
+            ctx: null,
+            balloons: [],
+            popped: 0,
+            wins: 0,
+            balloonInterval: null,
+            animationFrame: null,
+            logoImg: null,
+            targetBalloons: 30,
+            winChance: 0.25, // 25% šance na výhru
+            isPlaying: false, // Hra ještě nezačala
+            prizes: [
+                { emoji: '💰', title: 'Výhra!', text: '10 kreditů na tvůj účet!' },
+                { emoji: '🎁', title: 'Výhra!', text: 'Sleva 50 Kč na další nákup!' },
+                { emoji: '🎟️', title: 'Výhra!', text: 'Sleva 10% na jakýkoliv zážitek!' },
+                { emoji: '⭐', title: 'Výhra!', text: '20 XP bodů!' },
+                { emoji: '🎊', title: 'Výhra!', text: 'Slevový kód na 100 Kč!' },
+            ]
+        };
+
+        // Load Slevomat logo
+        function loadBalloonLogo() {
+            const img = new Image();
+            img.onload = () => {
+                balloonGame.logoImg = img;
+            };
+            img.src = 'logo.svg';
+        }
+
+        // Balloon class
+        class Balloon {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = 35 + Math.random() * 20;
+                this.speed = 1 + Math.random() * 2;
+                this.wobble = Math.random() * Math.PI * 2;
+                this.wobbleSpeed = 0.02 + Math.random() * 0.03;
+                this.color = color;
+                this.popped = false;
+                this.popAnimation = 0;
+            }
+
+            update() {
+                if (!this.popped) {
+                    this.y -= this.speed;
+                    this.wobble += this.wobbleSpeed;
+                    this.x += Math.sin(this.wobble) * 0.5;
+                } else {
+                    this.popAnimation += 0.1;
+                }
+            }
+
+            draw(ctx) {
+                if (this.popped && this.popAnimation > 1) return;
+
+                ctx.save();
+
+                if (this.popped) {
+                    // Pop animation
+                    const scale = 1 + this.popAnimation * 0.5;
+                    const alpha = 1 - this.popAnimation;
+                    ctx.globalAlpha = alpha;
+                    ctx.translate(this.x, this.y);
+                    ctx.scale(scale, scale);
+                    ctx.translate(-this.x, -this.y);
+                }
+
+                // Draw balloon body
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.ellipse(this.x, this.y, this.radius, this.radius * 1.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw Slevomat logo
+                if (balloonGame.logoImg) {
+                    const logoSize = this.radius * 0.8;
+                    ctx.drawImage(
+                        balloonGame.logoImg,
+                        this.x - logoSize / 2,
+                        this.y - logoSize / 2,
+                        logoSize,
+                        logoSize
+                    );
+                } else {
+                    // Fallback circle design
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 0.4, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Draw S
+                    ctx.fillStyle = this.color;
+                    ctx.font = `bold ${this.radius * 0.5}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('S', this.x, this.y);
+                }
+
+                // Balloon string
+                if (!this.popped) {
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y + this.radius * 1.2);
+                    ctx.quadraticCurveTo(
+                        this.x + 5,
+                        this.y + this.radius * 1.5,
+                        this.x,
+                        this.y + this.radius * 2
+                    );
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+            }
+
+            isClicked(mouseX, mouseY) {
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                return Math.sqrt(dx * dx + dy * dy) < this.radius;
+            }
+        }
+
+        // Initialize balloon game
+        function initBalloonGame() {
+            const canvas = document.getElementById('balloonCanvas');
+            if (!canvas) return;
+
+            balloonGame.canvas = canvas;
+            balloonGame.ctx = canvas.getContext('2d');
+
+            // Load logo
+            loadBalloonLogo();
+
+            // Set canvas size
+            resizeBalloonCanvas();
+            window.addEventListener('resize', resizeBalloonCanvas);
+
+            // Mouse/touch events
+            canvas.addEventListener('click', handleBalloonClick);
+            canvas.addEventListener('touchstart', handleBalloonTouch, { passive: false });
+
+            // Reset game state
+            balloonGame.balloons = [];
+            balloonGame.popped = 0;
+            balloonGame.wins = 0;
+            balloonGame.isPlaying = false;
+            updateBalloonStats();
+
+            // Show start overlay
+            const overlay = document.getElementById('balloonStartOverlay');
+            if (overlay) overlay.classList.remove('hidden');
+
+            // Start animation loop (but don't spawn balloons yet)
+            animateBalloons();
+        }
+
+        function startBalloonGameNow() {
+            balloonGame.isPlaying = true;
+
+            // Hide start overlay
+            const overlay = document.getElementById('balloonStartOverlay');
+            if (overlay) overlay.classList.add('hidden');
+
+            // Start spawning balloons
+            startBalloonGame();
+        }
+
+        function resizeBalloonCanvas() {
+            if (!balloonGame.canvas) return;
+            balloonGame.canvas.width = balloonGame.canvas.offsetWidth;
+            balloonGame.canvas.height = balloonGame.canvas.offsetHeight;
+        }
+
+        function startBalloonGame() {
+            // Spawn balloons only when game is playing
+            balloonGame.balloonInterval = setInterval(() => {
+                if (balloonGame.isPlaying && balloonGame.balloons.length < 8) {
+                    spawnBalloon();
+                }
+            }, 1500);
+        }
+
+        function spawnBalloon() {
+            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+            const x = 50 + Math.random() * (balloonGame.canvas.width - 100);
+            const y = balloonGame.canvas.height + 50;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            balloonGame.balloons.push(new Balloon(x, y, color));
+        }
+
+        function animateBalloons() {
+            const ctx = balloonGame.ctx;
+            ctx.clearRect(0, 0, balloonGame.canvas.width, balloonGame.canvas.height);
+
+            // Update and draw balloons
+            balloonGame.balloons = balloonGame.balloons.filter(balloon => {
+                balloon.update();
+                balloon.draw(ctx);
+                return balloon.y > -100 && !(balloon.popped && balloon.popAnimation > 1);
+            });
+
+            balloonGame.animationFrame = requestAnimationFrame(animateBalloons);
+        }
+
+        function handleBalloonClick(e) {
+            const rect = balloonGame.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            checkBalloonPop(x, y);
+        }
+
+        function handleBalloonTouch(e) {
+            e.preventDefault();
+            const rect = balloonGame.canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            checkBalloonPop(x, y);
+        }
+
+        function checkBalloonPop(x, y) {
+            for (let i = balloonGame.balloons.length - 1; i >= 0; i--) {
+                const balloon = balloonGame.balloons[i];
+                if (!balloon.popped && balloon.isClicked(x, y)) {
+                    balloon.popped = true;
+                    balloonGame.popped++;
+                    updateBalloonStats();
+
+                    // Play pop sound effect (visual feedback)
+                    createPopParticles(balloon.x, balloon.y, balloon.color);
+
+                    // Check for prize (random chance or test after 7 balloons)
+                    const hasWin = Math.random() < balloonGame.winChance || balloonGame.popped === 7;
+
+                    if (hasWin) {
+                        balloonGame.wins++;
+                        setTimeout(() => {
+                            showPrizeModal();
+                        }, 300);
+                    }
+
+                    // Check if game completed
+                    if (balloonGame.popped >= balloonGame.targetBalloons) {
+                        setTimeout(() => {
+                            showGameComplete();
+                        }, 500);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        function createPopParticles(x, y, color) {
+            const canvas = balloonGame.canvas;
+            const ctx = balloonGame.ctx;
+
+            // Create particle effect
+            for (let i = 0; i < 8; i++) {
+                const angle = (Math.PI * 2 * i) / 8;
+                const particle = {
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * 3,
+                    vy: Math.sin(angle) * 3,
+                    life: 1,
+                    color: color
+                };
+
+                animateParticle(particle);
+            }
+        }
+
+        function animateParticle(particle) {
+            const animate = () => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life -= 0.05;
+
+                if (particle.life > 0) {
+                    const ctx = balloonGame.ctx;
+                    ctx.save();
+                    ctx.globalAlpha = particle.life;
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+
+                    requestAnimationFrame(animate);
+                }
+            };
+            animate();
+        }
+
+        function updateBalloonStats() {
+            document.getElementById('balloonPopped').textContent = balloonGame.popped;
+            document.getElementById('balloonWins').textContent = balloonGame.wins;
+        }
+
+        function showPrizeModal() {
+            const prize = balloonGame.prizes[Math.floor(Math.random() * balloonGame.prizes.length)];
+
+            // Zastavit spawning balónků
+            balloonGame.isPlaying = false;
+
+            document.getElementById('prizeEmoji').textContent = prize.emoji;
+            document.getElementById('prizeTitle').textContent = prize.title;
+            document.getElementById('prizeText').textContent = prize.text;
+            document.getElementById('balloonPrizeModal').classList.add('show');
+        }
+
+        function showGameComplete() {
+            const totalWins = balloonGame.wins;
+            let message = '';
+            let emoji = '🎉';
+
+            if (totalWins === 0) {
+                emoji = '😢';
+                message = 'Tentokrát to nevyšlo! Zkus to znovu a možná budeš mít víc štěstí!';
+            } else if (totalWins <= 3) {
+                emoji = '🎊';
+                message = `Skvělé! Našel jsi ${totalWins} ${totalWins === 1 ? 'výhru' : 'výhry'}!`;
+            } else {
+                emoji = '🏆';
+                message = `Úžasné! Získal jsi ${totalWins} výher! Jsi mistr!`;
+            }
+
+            document.getElementById('prizeEmoji').textContent = emoji;
+            document.getElementById('prizeTitle').textContent = 'Hra dokončena!';
+            document.getElementById('prizeText').innerHTML = `Praskl jsi všech 30 balónků!<br><br>${message}<br><br>🎁 Odměna: 30 kreditů!`;
+            document.getElementById('balloonPrizeModal').classList.add('show');
+
+            // Add 30 credits for completing all balloons
+            gameState.credits += 30;
+            addXP(50);
+            saveState();
+
+            // Stop spawning new balloons
+            stopBalloonGame();
+        }
+
+        function closePrizeModal() {
+            document.getElementById('balloonPrizeModal').classList.remove('show');
+
+            // Pokračovat ve hře (pokud ještě není u konce)
+            if (balloonGame.popped < balloonGame.targetBalloons) {
+                balloonGame.isPlaying = true;
+            }
+        }
+
+        function stopBalloonGame() {
+            if (balloonGame.balloonInterval) {
+                clearInterval(balloonGame.balloonInterval);
+            }
+            if (balloonGame.animationFrame) {
+                cancelAnimationFrame(balloonGame.animationFrame);
+            }
         }
 
         // Initialize
