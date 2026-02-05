@@ -2266,7 +2266,7 @@
                 this.x = x;
                 this.y = y;
                 this.radius = 35 + Math.random() * 20;
-                this.speed = 0.5 + Math.random() * 3.5; // Větší variabilita rychlosti (0.5 - 4)
+                this.speed = 1.5 + Math.random() * 2.5; // Rychlost (1.5 - 4)
                 this.wobble = Math.random() * Math.PI * 2;
                 this.wobbleSpeed = 0.02 + Math.random() * 0.03;
                 this.color = color;
@@ -2464,8 +2464,8 @@
                     // Play pop sound effect (visual feedback)
                     createPopParticles(balloon.x, balloon.y, balloon.color);
 
-                    // Check for prize (random chance or test after 7 balloons)
-                    const hasWin = Math.random() < balloonGame.winChance || balloonGame.popped === 7;
+                    // Check for prize (každých 7 balónků: 7, 14, 21, 28)
+                    const hasWin = balloonGame.popped % 7 === 0;
 
                     if (hasWin) {
                         balloonGame.wins++;
